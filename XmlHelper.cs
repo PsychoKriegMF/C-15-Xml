@@ -1,12 +1,14 @@
-﻿using System;
+﻿using C_15_Xml;
+using HomeWork_15;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace C_15_Xml
+namespace HomeWork_15
 {
     public class XmlHelper
     {
@@ -16,51 +18,45 @@ namespace C_15_Xml
             using (StreamReader reader = new StreamReader(xmlPath))
             {
                 Grid grid = (Grid)serializer.Deserialize(reader);
-
-                //преобразование строк "True" и "False" в булевы зхначения
-                foreach(var dockPanel in grid.DockPanels)
+                // Преобразование строк "True" и "False" в булевые значения
+                foreach (var dockPanel in grid.DockPanels)
                 {
-                    if(dockPanel.LastChildFill == "True")
-                    {
+                    if (dockPanel.LastChildFill == "True")
                         dockPanel.LastChildFill = "true";
-                    }
-                    else if(dockPanel.LastChildFill == "False")
-                    {
+                    else if (dockPanel.LastChildFill == "False")
                         dockPanel.LastChildFill = "false";
-                    }
                 }
                 return grid;
             }
         }
+        // После того, как мы что-нибудь поменяем в объектах, записываем в файл изменённые данные
         public static void SerializeXml(Grid grid, string xmlPath)
         {
-            XmlSerializer serializer = new XmlSerializer (typeof(Grid));
-            using(StreamWriter writer = new StreamWriter(xmlPath))
-            { 
-                serializer.Serialize(writer, grid); 
+            XmlSerializer ser = new XmlSerializer(typeof(Grid));
+            using (StreamWriter writer = new StreamWriter(xmlPath))
+            {
+                ser.Serialize(writer, grid);
             }
         }
-
-        public static void AddTextBlock(Grid grid, string text, string dock,int fontSize,string horizontalAligement)
+        // Метод для добавления текст-блоков
+        public static void AddTextBlock(Grid grid, string text, string dock, int fontSize, string horizontalAligment)
         {
             TextBlock newTextBlock = new TextBlock
             {
                 Text = text,
                 DockPanelDock = dock,
                 FontSize = fontSize,
-                HorizontalAlignment = horizontalAligement
+                HorizontalAlignment = horizontalAligment
             };
-
-            DockPanel targetDockPanel = grid.DockPanels[0]; //выбираем первый DockPanel для примера
-            targetDockPanel.Elements.Add(newTextBlock);
+            DockPanel targetDocPanel = grid.DockPanels[0]; // Выбираем первый DockPanels для примера
+            targetDocPanel.Elements.Add(newTextBlock);
         }
-
-        public static void AddButton(Grid grid, string text, string dock,  int gridColumn, int maxWidth, int minHeight, string background, string margin, int padding,string click)
+        public static void AddButton(Grid grid, string text, string doc, int gridColumn, int maxWidth, int minHeight, string background, string margin, string padding, string click)
         {
             Button newButton = new Button
             {
                 Text = text,
-                DockPanelDock = dock,
+                DockPanelDock = doc,
                 GridColumn = gridColumn,
                 MaxWidth = maxWidth,
                 MinHeight = minHeight,
@@ -69,8 +65,33 @@ namespace C_15_Xml
                 Padding = padding,
                 Click = click
             };
-            DockPanel targetDockPAnel = grid.DockPanels[0];
-            targetDockPAnel.Elements.Add(newButton);
-        }                          
+            DockPanel targetDockPanel = grid.DockPanels[0]; // Выбираем первый DockPanels для примера
+            targetDockPanel.Elements.Add(newButton);
+        }
+        public static void AddElement<T>(T el, Grid grid) where T : class
+        {
+            // Выбор DockPanels, в который будет добавлен новый элемент            
+            Console.Write($"\nВыберите номер DockPanel (от 1 до {(int)grid.DockPanels.Count})\nВаш выбор -> ");
+            // Выбираем DockPanels, который указал пользователь
+            DockPanel dock = grid.DockPanels[Exc_Int(Console.ReadLine(), (int)grid.DockPanels.Count) - 1];
+            dock.Elements.Add(el); // Добавляем элемент в выбранный пользователем DockPanels
+        }
+
+        static int Exc_Int(string message, int max) // Метод обработки введённого пользователем номера DockPanels
+        {
+            int number = 0;
+            // Если введённое значение можно преобразовать в int, то записываем его в number
+            if (int.TryParse(message, out number)) { }
+            if (!int.TryParse(message, out int value) || number < 1 || number > max)
+            {
+                while (!int.TryParse(message, out value) || number < 1 || number > max)
+                {
+                    Console.Write($"Введённое некорректное значение! Введите номер DockPanel (от 1 до {max}) ещё один раз -> ");
+                    message = Console.ReadLine();
+                    if (int.TryParse(message, out number)) { }
+                }
+            }
+            return number;
+        }
     }
 }

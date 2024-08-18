@@ -28,7 +28,7 @@ namespace C_15_Xml
         public string Margin { get; set; }
 
         [XmlAttribute("Padding")]
-        public int Padding {  get; set; }
+        public string Padding {  get; set; }
 
         [XmlAttribute("Click")]
         public string Click {  get; set; }

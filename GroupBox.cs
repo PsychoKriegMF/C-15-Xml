@@ -19,7 +19,7 @@ namespace C_15_Xml
         public string BorderBrush { get; set; }
 
         [XmlAttribute("BorderThickness")]
-        public int BorderThickness { get; set; }
+        public string BorderThickness { get; set; }
         [XmlElement("StackPanel ")]
         public StackPanel StackPanel {  get; set; }
     }
